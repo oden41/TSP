@@ -5,17 +5,31 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
+class Data {
+	public int ID;
+	public int dist;
+}
 
 public class CitiesData {
 
 	private static double[][] fCitiesPoint;
-	private static int noOfCol;
+	private static int noOfCities;
+	private static int[][] neighbor;
+	private static ArrayList<Integer>[] optNeighber;
 
 	public CitiesData(String path, int noOfCities) {
 		File file = new File(path);
 		BufferedReader bReader = null;
 		fCitiesPoint = new double[2][noOfCities];
-		noOfCol = noOfCities;
+		this.noOfCities = noOfCities;
+		neighbor = new int[50][noOfCities];
+		optNeighber = new ArrayList[noOfCities];
+		for (int i = 0; i < noOfCities; i++) {
+			optNeighber[i] = new ArrayList<>();
+		}
 
 		try {
 			bReader = new BufferedReader(new FileReader(file));
@@ -45,6 +59,21 @@ public class CitiesData {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
+
+		createNeighbor();
+	}
+
+	private void createNeighbor() {
+		// neighbor
+		for (int i = 0; i < noOfCities; i++) {
+			Data[] data = new Data[noOfCities];
+			for (int j = 0; j < data.length; j++) {
+				data[j] = new Data();
+				data[j].ID = j;
+				data[j].dist = calcDistance(i, j);
+			}
+			Stream.of(data).sorted((a, b) -> a.dist - b.dist);
+		}
 	}
 
 	/**
@@ -63,5 +92,4 @@ public class CitiesData {
 
 		return (int) Math.floor(Math.sqrt(xd * xd + yd * yd) + 0.5);
 	}
-
 }
