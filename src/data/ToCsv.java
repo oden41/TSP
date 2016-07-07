@@ -94,9 +94,10 @@ public class ToCsv {
 
 
     public static void main(String[] args) {
-	ToCsv csv = new ToCsv("./data/ch71009.tsp", 71009);
-	calcDistance();
-	outputFile("ch71009.csv");
+//	ToCsv csv = new ToCsv("./data/ca4663.tsp", 4663);
+//	calcDistance();
+//	outputFile("ca4663.csv");
+	CitiesData data = new CitiesData("./data/ch71009.tsp", 71009);
     }
 
 }
