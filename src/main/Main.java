@@ -1,8 +1,8 @@
 package main;
 
+import data.CitiesData;
 import localsearch.Opt_2;
 import path.TravelingPath;
-import data.CitiesData;
 
 public class Main {
 
@@ -16,7 +16,14 @@ public class Main {
 		TravelingPath path = new TravelingPath(noOfCities);
 		path.init();
 		Opt_2 opt2 = new Opt_2(noOfCities, path);
+		long start = System.currentTimeMillis();
+
 		opt2.doOneIterator();
+
+		long end = System.currentTimeMillis();
+
+		System.out.println((end - start)  + "ms");
+		System.out.println(path.getTourLength());
 	}
 
 }

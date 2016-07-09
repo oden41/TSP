@@ -47,21 +47,6 @@ public class ToCsv {
 	}
     }
 
-    private static void calcDistance(){
-	for (int i = 0; i < datalist.length; i++) {
-	    for (int j = 3; j < datalist[0].length; j++) {
-		int distance = 0;
-		double xd = 0;
-		double yd = 0;
-
-		xd = Math.abs(datalist[j - 3][1] - datalist[i][1]);
-		yd = Math.abs(datalist[j - 3][2] - datalist[i][2]);
-
-		datalist[i][j] = Math.floor(Math.sqrt(xd * xd + yd * yd) + 0.5);
-	    }
-	}
-    }
-
     private static void outputFile(String fileName) {
 	try {
 	    PrintWriter bw = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
@@ -97,7 +82,8 @@ public class ToCsv {
 //	ToCsv csv = new ToCsv("./data/ca4663.tsp", 4663);
 //	calcDistance();
 //	outputFile("ca4663.csv");
-	CitiesData data = new CitiesData("./data/ch71009.tsp", 71009);
+	CitiesData data = new CitiesData("./data/bm33708.tsp", 33708);
+	data.outputFile("neighbor_33708.csv");
     }
 
 }

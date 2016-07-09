@@ -36,7 +36,65 @@ public class TravelingPath {
 
 	public int nextCity(int city) {
 		int next = cityToIndex[city] + 1;
-		return next > path.length - 1 ? path[path.length - 1] : path[next];
+		return next > path.length - 1 ? path[0] : path[next];
+	}
+
+	public void filpPath(int a,int b,int c,int d) {
+	    //index:a < b < c < dにするための処理
+	    if(cityToIndex[a] > cityToIndex[b]){
+		int temp = a;
+		a = b;
+		b = temp;
+		temp = c;
+		c = d;
+		d = temp;
+	    }
+	    if(cityToIndex[a] > cityToIndex[c]){
+	    System.out.println("変更前　a:" + cityToIndex[a] +" b:" + cityToIndex[b] + " c:" + cityToIndex[c] +" d:" + cityToIndex[d]);
+		int temp = a;
+		a = c;
+		c = temp;
+		temp  = b;
+		b = d;
+		d = temp;
+
+		System.out.println("変更後　a:" + cityToIndex[a] +" b:" + cityToIndex[b] + " c:" + cityToIndex[c] +" d:" + cityToIndex[d]);
+	    }
+
+	    if(cityToIndex[c] - cityToIndex[a] <= path.length / 2 ){
+		//内
+		int i = cityToIndex[b];
+		int j = cityToIndex[c];
+		if(i > j){
+		    int temp = i;
+		    i = j;
+		    j = temp;
+		}
+		while (i < j) {
+		    swap(i, j);
+		    i++;
+		    j--;
+		}
+	    }
+	    else{
+		//外
+		int i = cityToIndex[a];
+		int j = cityToIndex[d];
+		if(i > j){
+		    int temp = i;
+		    i = j;
+		    j = temp;
+		}
+		while (j - i != 1 && j != i) {
+		    swap(i, j);
+		    i--;
+		    j++;
+		    if(i < 0)
+			i = path.length - 1;
+		    if(j > path.length - 1)
+			j = 0;
+		}
+	    }
 	}
 
 	public void calcTourLength() {
@@ -44,7 +102,7 @@ public class TravelingPath {
 		for (int i = 0; i < path.length - 1; i++) {
 			distance += CitiesData.calcDistance(path[i], path[i + 1]);
 		}
-		tourLength = distance;
+		tourLength = distance + CitiesData.calcDistance(path[0], path[path.length - 1]);
 	}
 
 	public final long getTourLength() {
