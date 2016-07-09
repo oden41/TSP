@@ -57,10 +57,6 @@ public class Opt_2 {
 					cityD = path.prevCity(cityC);
 				    //d
 				    if(CitiesData.calcDistance(cityA, cityC) + CitiesData.calcDistance(cityB, cityD) < CitiesData.calcDistance(cityA, cityB) + CitiesData.calcDistance(cityC, cityD)){
-					int subDist = CitiesData.calcDistance(cityA, cityC) + CitiesData.calcDistance(cityB, cityD) - CitiesData.calcDistance(cityA, cityB) - CitiesData.calcDistance(cityC, cityD);
-					if(subDist > 0)
-					    System.out.println(subDist);
-					path.addTourLength(subDist);
 					path.filpPath(cityA, cityB, cityC, cityD);
 					if(!HIndex.contains(cityB))
 					    HIndex.add(cityB);

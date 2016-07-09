@@ -40,6 +40,46 @@ public class TravelingPath {
 	}
 
 	public void filpPath(int a,int b,int c,int d) {
+	    //端点処理
+	    if(cityToIndex[a] == 0 && cityToIndex[b] == path.length - 1 || cityToIndex[c] == 0 && cityToIndex[d] == path.length - 1){
+		int temp = a;
+		a = b;
+		b = temp;
+		temp = c;
+		c = d;
+		d = temp;
+
+		int i = 100000;
+		int j = 100000;
+		if(cityToIndex[b] == 0){
+		    if(cityToIndex[c] - cityToIndex[b] <= path.length / 2){
+			i = cityToIndex[b];
+			j = cityToIndex[c];
+		    }
+		    else{
+			i = cityToIndex[d];
+			j = cityToIndex[a];
+		    }
+		}
+		else if(cityToIndex[d] == 0){
+		    if(cityToIndex[a] - cityToIndex[d] <= path.length / 2){
+			i = cityToIndex[d];
+			j = cityToIndex[a];
+		    }
+		    else{
+			i = cityToIndex[b];
+			j = cityToIndex[c];
+		    }
+		}
+
+		while (i < j) {
+		    swap(i, j);
+		    i++;
+		    j--;
+		}
+		return;
+	    }
+
 	    //index:a < b < c < dにするための処理
 	    if(cityToIndex[a] > cityToIndex[b]){
 		int temp = a;
@@ -50,26 +90,18 @@ public class TravelingPath {
 		d = temp;
 	    }
 	    if(cityToIndex[a] > cityToIndex[c]){
-	    System.out.println("変更前　a:" + cityToIndex[a] +" b:" + cityToIndex[b] + " c:" + cityToIndex[c] +" d:" + cityToIndex[d]);
 		int temp = a;
 		a = c;
 		c = temp;
 		temp  = b;
 		b = d;
 		d = temp;
-
-		System.out.println("変更後　a:" + cityToIndex[a] +" b:" + cityToIndex[b] + " c:" + cityToIndex[c] +" d:" + cityToIndex[d]);
 	    }
 
 	    if(cityToIndex[c] - cityToIndex[a] <= path.length / 2 ){
 		//内
 		int i = cityToIndex[b];
 		int j = cityToIndex[c];
-		if(i > j){
-		    int temp = i;
-		    i = j;
-		    j = temp;
-		}
 		while (i < j) {
 		    swap(i, j);
 		    i++;
@@ -80,11 +112,6 @@ public class TravelingPath {
 		//外
 		int i = cityToIndex[a];
 		int j = cityToIndex[d];
-		if(i > j){
-		    int temp = i;
-		    i = j;
-		    j = temp;
-		}
 		while (j - i != 1 && j != i) {
 		    swap(i, j);
 		    i--;
@@ -97,7 +124,7 @@ public class TravelingPath {
 	    }
 	}
 
-	public void calcTourLength() {
+	private void calcTourLength() {
 		long distance = 0;
 		for (int i = 0; i < path.length - 1; i++) {
 			distance += CitiesData.calcDistance(path[i], path[i + 1]);
@@ -106,7 +133,8 @@ public class TravelingPath {
 	}
 
 	public final long getTourLength() {
-		return tourLength;
+	    calcTourLength();
+	    return tourLength;
 	}
 
 	public final void addTourLength(int value) {
