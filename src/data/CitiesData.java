@@ -18,18 +18,18 @@ class Data {
 
 public class CitiesData {
 
-	private static double[][] fCitiesPoint;
+	private static double[] fCitiesPoint;
 	private static int noOfCities;
-	private static int[][] neighbor;
-	private static ArrayList<Integer>[][] revNeighbor;
+	private static int[] neighbor;
+	private static ArrayList<Integer>[] revNeighbor;
 
 	public CitiesData(String path, int noOfCities) {
 		File file = new File(path);
 		BufferedReader bReader = null;
-		fCitiesPoint = new double[2][noOfCities];
+		fCitiesPoint = new double[2 * noOfCities];
 		this.noOfCities = noOfCities;
-		neighbor = new int[50][noOfCities];
-		revNeighbor = new ArrayList[50][noOfCities];
+		neighbor = new int[50 * noOfCities];
+		revNeighbor = new ArrayList[50 * noOfCities];
 
 		try {
 			bReader = new BufferedReader(new FileReader(file));
@@ -46,8 +46,8 @@ public class CitiesData {
 					break;
 
 				String[] split = string.split(" ");
-				fCitiesPoint[0][j] = Double.parseDouble(split[1]);
-				fCitiesPoint[1][j] = Double.parseDouble(split[2]);
+				setCitiesPoint(j, 0, Double.parseDouble(split[1]));
+				setCitiesPoint(j, 1, Double.parseDouble(split[2]));
 				j++;
 			}
 			bReader.close();
@@ -74,12 +74,12 @@ public class CitiesData {
 			}
 			Arrays.sort(data, (a, b) -> a.dist - b.dist);
 			for (int j = 1; j < 51; j++) {
-			    neighbor[j - 1][i] = data[j].ID;
+			    setNeighbor(j - 1, i, data[j].ID);
 			}
 		}
 		//rev_neighbor
 		for (int i = 0; i < 50; i++) {
-		    int[] k_neighbor = neighbor[i];
+		    int[] k_neighbor = getNeighbor(i);
 		    ArrayList<Integer>[] index = new ArrayList[noOfCities];
 		    for (int j = 0; j < noOfCities; j++) {
 			index[j] = new ArrayList<>();
@@ -88,10 +88,11 @@ public class CitiesData {
 			index[k_neighbor[j]].add(j);
 		    }
 		    for (int j = 0; j < index.length; j++) {
-			revNeighbor[i][j] = index[j];
+			setRevNeighbor(i, j, index[j]);
 		    }
 		}
 	}
+
 
 	/**
 	 * 都市iとjの距離を計算する
@@ -104,17 +105,17 @@ public class CitiesData {
 		double xd = 0;
 		double yd = 0;
 
-		xd = Math.abs(fCitiesPoint[0][j] - fCitiesPoint[0][i]);
-		yd = Math.abs(fCitiesPoint[1][j] - fCitiesPoint[1][i]);
+		xd = Math.abs(getCitiesPoint(j, 0) - getCitiesPoint(i, 0));
+		yd = Math.abs(getCitiesPoint(j, 1) - getCitiesPoint(i, 1));
 
 		return (int) Math.floor(Math.sqrt(xd * xd + yd * yd) + 0.5);
 	}
 
 	    private static String concat(char delim,int index) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < neighbor[index].length; i++) {
-		    builder.append(String.valueOf(neighbor[index][i]));
-		    if(i != neighbor[index].length - 1)
+		for (int i = 0; i < noOfCities; i++) {
+		    builder.append(String.valueOf(getNeighbor(index, i)));
+		    if(i != noOfCities - 1)
 			builder.append(delim);
 		}
 
@@ -125,9 +126,7 @@ public class CitiesData {
 		try {
 		    PrintWriter bw = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
 
-		    for (int i = 0; i < neighbor.length; i++) {
-			if(i == neighbor.length - 1)
-			    System.out.println();
+		    for (int i = 0; i < 50; i++) {
 			String string = concat(',', i);
 			bw.println(string);
 		    }
@@ -139,10 +138,38 @@ public class CitiesData {
 	    }
 
 	    public static int getKneighbor(int k,int city){
-		return neighbor[k][city];
+		return getNeighbor(k, city);
 	    }
 
-	    public static ArrayList<Integer> getRevNeighbor(int k, int city) {
-		return revNeighbor[k][city];
+	    public static double getCitiesPoint(int row, int col) {
+		return fCitiesPoint[row * 2 + col];
 	    }
+
+	    public static void setCitiesPoint(int row,int col, double element) {
+		fCitiesPoint[row * 2 + col] = element;
+	    }
+
+	    public static int getNeighbor(int k, int city) {
+		return neighbor[k * noOfCities + city];
+	    }
+
+	    public static int[] getNeighbor(int k) {
+		int[] newArray = new int[noOfCities];
+		System.arraycopy(neighbor, k * noOfCities, newArray, 0, noOfCities);
+		return newArray;
+	    }
+
+	    public static void setNeighbor(int k, int city, int element) {
+		neighbor[k * noOfCities + city] = element;
+	    }
+
+	    public static ArrayList<Integer> getRevNeighbor(int k,int city) {
+		return revNeighbor[k * noOfCities + city];
+	    }
+
+
+	private void setRevNeighbor(int k, int city, ArrayList<Integer> arrayList) {
+	    revNeighbor[k * noOfCities + city] = arrayList;
+	}
+
 }
