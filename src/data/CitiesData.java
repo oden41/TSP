@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.HashSet;
 
 class Data {
 	public int ID;
@@ -20,7 +20,7 @@ public class CitiesData {
 	private static double[] fCitiesPoint;
 	private static int noOfCities;
 	private static int[] neighbor;
-	private static ArrayList<Integer>[] revNeighbor;
+	private static HashSet<Integer>[] revNeighbor;
 
 	public CitiesData(String path, int noOfCities) {
 		File file = new File("./data/" + path + ".tsp");
@@ -28,7 +28,7 @@ public class CitiesData {
 		fCitiesPoint = new double[2 * noOfCities];
 		this.noOfCities = noOfCities;
 		neighbor = new int[50 * noOfCities];
-		revNeighbor = new ArrayList[50 * noOfCities];
+		revNeighbor = new HashSet[50 * noOfCities];
 
 		try {
 			bReader = new BufferedReader(new FileReader(file));
@@ -68,9 +68,9 @@ public class CitiesData {
 		//rev_neighbor
 		for (int i = 0; i < 50; i++) {
 		    int[] k_neighbor = getNeighbor(i);
-		    ArrayList<Integer>[] index = new ArrayList[noOfCities];
+		    HashSet<Integer>[] index = new HashSet[noOfCities];
 		    for (int j = 0; j < noOfCities; j++) {
-			index[j] = new ArrayList<>();
+			index[j] = new HashSet<>();
 		    }
 		    for (int j = 0; j < k_neighbor.length; j++) {
 			index[k_neighbor[j]].add(j);
@@ -171,13 +171,13 @@ public class CitiesData {
 		neighbor[k * noOfCities + city] = element;
 	    }
 
-	    public static ArrayList<Integer> getRevNeighbor(int k,int city) {
+	    public static HashSet<Integer> getRevNeighbor(int k,int city) {
 		return revNeighbor[k * noOfCities + city];
 	    }
 
 
-	private void setRevNeighbor(int k, int city, ArrayList<Integer> arrayList) {
-	    revNeighbor[k * noOfCities + city] = arrayList;
+	private void setRevNeighbor(int k, int city, HashSet<Integer> hashList) {
+	    revNeighbor[k * noOfCities + city] = hashList;
 	}
 
 }

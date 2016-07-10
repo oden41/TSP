@@ -11,8 +11,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		int noOfCities = 4663;
-		CitiesData data = new CitiesData("./data/ca4663.tsp", noOfCities);
+		int noOfCities = 100000;
+		CitiesData data = new CitiesData("mona-lisa100K", noOfCities);
 		TravelingPath path = new TravelingPath(noOfCities);
 		path.init();
 		Opt_2 opt2 = new Opt_2(noOfCities, path);

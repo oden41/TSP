@@ -82,8 +82,7 @@ public class ToCsv {
 //	ToCsv csv = new ToCsv("./data/ca4663.tsp", 4663);
 //	calcDistance();
 //	outputFile("ca4663.csv");
-	CitiesData data = new CitiesData("./data/bm33708.tsp", 33708);
-	data.outputFile("neighbor_33708.csv");
+	CitiesData data = new CitiesData("mona-lisa100K", 100000);
     }
 
 }
