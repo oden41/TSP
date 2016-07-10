@@ -7,7 +7,7 @@ import data.CitiesData;
 public class TravelingPath {
 	private int[] path;
 	private final int noOfCities;
-	private long tourLength;
+	private double tourLength;
 	private int[] cityToIndex;
 
 	private Random random;
@@ -125,14 +125,14 @@ public class TravelingPath {
 	}
 
 	private void calcTourLength() {
-		long distance = 0;
+		double distance = 0;
 		for (int i = 0; i < path.length - 1; i++) {
 			distance += CitiesData.calcDistance(path[i], path[i + 1]);
 		}
 		tourLength = distance + CitiesData.calcDistance(path[0], path[path.length - 1]);
 	}
 
-	public final long getTourLength() {
+	public final double getTourLength() {
 	    calcTourLength();
 	    return tourLength;
 	}

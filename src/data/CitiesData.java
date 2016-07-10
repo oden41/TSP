@@ -12,7 +12,7 @@ import java.util.HashSet;
 
 class Data {
 	public int ID;
-	public int dist;
+	public double dist;
 }
 
 public class CitiesData {
@@ -65,6 +65,19 @@ public class CitiesData {
 	private void createNeighbor(String path) {
 		// neighbor
 		inputFile("./data/neighbor_" + path + "_1.csv");
+		// neighbor
+//		for (int i = 0; i < noOfCities; i++) {
+//			Data[] data = new Data[noOfCities];
+//			for (int j = 0; j < data.length; j++) {
+//				data[j] = new Data();
+//				data[j].ID = j;
+//				data[j].dist = calcDistance(i, j);
+//			}
+//			Arrays.sort(data, (a, b) -> ((Double) a.dist).compareTo((Double) b.dist));
+//			for (int j = 1; j < 51; j++) {
+//			    setNeighbor(j - 1, i, data[j].ID);
+//			}
+//		}
 		//rev_neighbor
 		for (int i = 0; i < 50; i++) {
 		    int[] k_neighbor = getNeighbor(i);
@@ -89,14 +102,14 @@ public class CitiesData {
 	 * @param j
 	 * @return
 	 */
-	public static int calcDistance(int i, int j) {
+	public static double calcDistance(int i, int j) {
 		double xd = 0;
 		double yd = 0;
 
 		xd = Math.abs(getCitiesPoint(j, 0) - getCitiesPoint(i, 0));
 		yd = Math.abs(getCitiesPoint(j, 1) - getCitiesPoint(i, 1));
 
-		return (int) Math.floor(Math.sqrt(xd * xd + yd * yd) + 0.5);
+		return Math.sqrt(xd * xd + yd * yd);
 	}
 
         private static String concat(char delim,int index) {

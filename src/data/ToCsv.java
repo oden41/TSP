@@ -81,8 +81,9 @@ public class ToCsv {
     public static void main(String[] args) {
 //	ToCsv csv = new ToCsv("./data/ca4663.tsp", 4663);
 //	calcDistance();
-//	outputFile("ca4663.csv");
+//
 	CitiesData data = new CitiesData("mona-lisa100K", 100000);
+	data.outputFile("neighbor_mona-lisa100K.csv");
     }
 
 }
