@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 class Data {
 	public int ID;
@@ -24,7 +23,7 @@ public class CitiesData {
 	private static ArrayList<Integer>[] revNeighbor;
 
 	public CitiesData(String path, int noOfCities) {
-		File file = new File(path);
+		File file = new File("./data/" + path + ".tsp");
 		BufferedReader bReader = null;
 		fCitiesPoint = new double[2 * noOfCities];
 		this.noOfCities = noOfCities;
@@ -60,23 +59,12 @@ public class CitiesData {
 			e.printStackTrace();
 		}
 
-		createNeighbor();
+		createNeighbor(path);
 	}
 
-	private void createNeighbor() {
+	private void createNeighbor(String path) {
 		// neighbor
-		for (int i = 0; i < noOfCities; i++) {
-			Data[] data = new Data[noOfCities];
-			for (int j = 0; j < data.length; j++) {
-				data[j] = new Data();
-				data[j].ID = j;
-				data[j].dist = calcDistance(i, j);
-			}
-			Arrays.sort(data, (a, b) -> a.dist - b.dist);
-			for (int j = 1; j < 51; j++) {
-			    setNeighbor(j - 1, i, data[j].ID);
-			}
-		}
+		inputFile("./data/neighbor_" + path + "_1.csv");
 		//rev_neighbor
 		for (int i = 0; i < 50; i++) {
 		    int[] k_neighbor = getNeighbor(i);
@@ -111,22 +99,42 @@ public class CitiesData {
 		return (int) Math.floor(Math.sqrt(xd * xd + yd * yd) + 0.5);
 	}
 
-	    private static String concat(char delim,int index) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < noOfCities; i++) {
-		    builder.append(String.valueOf(getNeighbor(index, i)));
-		    if(i != noOfCities - 1)
+        private static String concat(char delim,int index) {
+            	StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < 50; i++) {
+		    builder.append(String.valueOf(getNeighbor(i, index)));
+		    if(i != 50 - 1)
 			builder.append(delim);
 		}
 
 		return builder.toString();
-	    }
+	}
 
-	    public static void outputFile(String fileName) {
+        public static void inputFile(String filename) {
+            BufferedReader br = null;
+		try {
+		    br = new BufferedReader(new FileReader(filename));
+		    String str = "";
+		    int city = 0;
+		        while ((str = br.readLine()) != null) {
+		            String[] split = str.split(",");
+		            for (int i = 0; i < split.length; i++) {
+				setNeighbor(i, city, Integer.parseInt(split[i]));
+			    }
+		            city++;
+		        }
+		    br.close();
+		} catch (IOException e) {
+		    // TODO 自動生成された catch ブロック
+		    e.printStackTrace();
+		}
+	}
+
+	public static void outputFile(String fileName) {
 		try {
 		    PrintWriter bw = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
 
-		    for (int i = 0; i < 50; i++) {
+		    for (int i = 0; i < noOfCities; i++) {
 			String string = concat(',', i);
 			bw.println(string);
 		    }
@@ -135,7 +143,7 @@ public class CitiesData {
 		    // TODO 自動生成された catch ブロック
 		    e.printStackTrace();
 		}
-	    }
+	}
 
 	    public static int getKneighbor(int k,int city){
 		return getNeighbor(k, city);
