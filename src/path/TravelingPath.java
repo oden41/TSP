@@ -39,89 +39,89 @@ public class TravelingPath {
 		return next > path.length - 1 ? path[0] : path[next];
 	}
 
-	public void filpPath(int a,int b,int c,int d) {
-	    //端点処理
-	    if(cityToIndex[a] == 0 && cityToIndex[b] == path.length - 1 || cityToIndex[c] == 0 && cityToIndex[d] == path.length - 1){
-		int temp = a;
-		a = b;
-		b = temp;
-		temp = c;
-		c = d;
-		d = temp;
+	public void filpPath(int a, int b, int c, int d) {
+		// 端点処理
+		if (cityToIndex[a] == 0 && cityToIndex[b] == path.length - 1 || cityToIndex[c] == 0 && cityToIndex[d] == path.length - 1) {
+			int temp = a;
+			a = b;
+			b = temp;
+			temp = c;
+			c = d;
+			d = temp;
 
-		int i = 100000;
-		int j = 100000;
-		if(cityToIndex[b] == 0){
-		    if(cityToIndex[c] - cityToIndex[b] <= path.length / 2){
-			i = cityToIndex[b];
-			j = cityToIndex[c];
-		    }
-		    else{
-			i = cityToIndex[d];
-			j = cityToIndex[a];
-		    }
-		}
-		else if(cityToIndex[d] == 0){
-		    if(cityToIndex[a] - cityToIndex[d] <= path.length / 2){
-			i = cityToIndex[d];
-			j = cityToIndex[a];
-		    }
-		    else{
-			i = cityToIndex[b];
-			j = cityToIndex[c];
-		    }
+			int i = 100000;
+			int j = 100000;
+			if (cityToIndex[b] == 0) {
+				if (cityToIndex[c] - cityToIndex[b] <= path.length / 2) {
+					i = cityToIndex[b];
+					j = cityToIndex[c];
+				}
+				else {
+					i = cityToIndex[d];
+					j = cityToIndex[a];
+				}
+			}
+			else if (cityToIndex[d] == 0) {
+				if (cityToIndex[a] - cityToIndex[d] <= path.length / 2) {
+					i = cityToIndex[d];
+					j = cityToIndex[a];
+				}
+				else {
+					i = cityToIndex[b];
+					j = cityToIndex[c];
+				}
+			}
+
+			while (i < j) {
+				swap(i, j);
+				i++;
+				j--;
+			}
+			return;
 		}
 
-		while (i < j) {
-		    swap(i, j);
-		    i++;
-		    j--;
+		// index:a < b < c < dにするための処理
+		if (cityToIndex[a] > cityToIndex[b]) {
+			int temp = a;
+			a = b;
+			b = temp;
+			temp = c;
+			c = d;
+			d = temp;
 		}
-		return;
-	    }
+		if (cityToIndex[a] > cityToIndex[c]) {
+			int temp = a;
+			a = c;
+			c = temp;
+			temp = b;
+			b = d;
+			d = temp;
+		}
 
-	    //index:a < b < c < dにするための処理
-	    if(cityToIndex[a] > cityToIndex[b]){
-		int temp = a;
-		a = b;
-		b = temp;
-		temp = c;
-		c = d;
-		d = temp;
-	    }
-	    if(cityToIndex[a] > cityToIndex[c]){
-		int temp = a;
-		a = c;
-		c = temp;
-		temp  = b;
-		b = d;
-		d = temp;
-	    }
-
-	    if(cityToIndex[c] - cityToIndex[a] <= path.length / 2 ){
-		//内
-		int i = cityToIndex[b];
-		int j = cityToIndex[c];
-		while (i < j) {
-		    swap(i, j);
-		    i++;
-		    j--;
+		if (cityToIndex[c] - cityToIndex[a] <= path.length / 2) {
+			// 内
+			int i = cityToIndex[b];
+			int j = cityToIndex[c];
+			while (i < j) {
+				swap(i, j);
+				i++;
+				j--;
+			}
 		}
-	    }
-	    else{
-		//外
-		int i = cityToIndex[a];
-		int j = cityToIndex[d];
-		while (j - i != 1 && j != i) {
-		    swap(i, j);
-		    i--;
-		    j++;
-		    if(i < 0)
-			i = path.length - 1;
-		    if(j > path.length - 1)
-			j = 0;
+		else {
+			// 外
+			int i = cityToIndex[a];
+			int j = cityToIndex[d];
+			while (j - i != 1 && j != i) {
+				swap(i, j);
+				i--;
+				j++;
+				if (i < 0)
+					i = path.length - 1;
+				if (j > path.length - 1)
+					j = 0;
+			}
 		}
-	    }
 	}
 
 	private void calcTourLength() {
@@ -133,8 +133,8 @@ public class TravelingPath {
 	}
 
 	public final double getTourLength() {
-	    calcTourLength();
-	    return tourLength;
+		calcTourLength();
+		return tourLength;
 	}
 
 	public final void addTourLength(int value) {

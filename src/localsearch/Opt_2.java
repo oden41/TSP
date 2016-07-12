@@ -3,8 +3,8 @@ package localsearch;
 import java.util.HashSet;
 import java.util.Random;
 
-import data.CitiesData;
 import path.TravelingPath;
+import data.CitiesData;
 
 public class Opt_2 {
 	private final int K = 50;
@@ -12,7 +12,7 @@ public class Opt_2 {
 	private final Random random;
 	private final TravelingPath path;
 
-	//選択都市リスト
+	// 選択都市リスト
 	private int fNoOfCandidates;
 	private final boolean[] fIsCandidate;
 	private final int[] fCandidates;
@@ -50,47 +50,50 @@ public class Opt_2 {
 				else if (i == 1)
 					cityB = path.prevCity(cityA);
 			case 4:
-			    	boolean flag = false;
+				boolean flag = false;
 				for (int j = 0; j < K; j++) {
-				    //a
-				    cityC = CitiesData.getKneighbor(j, cityA);
-				    //b
-				    if(CitiesData.calcDistance(cityA, cityC) >= CitiesData.calcDistance(cityA, cityB)){
-					step = 5;
-					break;
-				    }
-				    //c
-				    if (i == 0)
-					cityD = path.nextCity(cityC);
-				    else if (i == 1)
-					cityD = path.prevCity(cityC);
-				    //d
-				    if(CitiesData.calcDistance(cityA, cityC) + CitiesData.calcDistance(cityB, cityD) < CitiesData.calcDistance(cityA, cityB) + CitiesData.calcDistance(cityC, cityD)){
-					path.filpPath(cityA, cityB, cityC, cityD);
+					// a
+					cityC = CitiesData.getKneighbor(j, cityA);
+					// b
+					if (CitiesData.calcDistance(cityA, cityC) >= CitiesData.calcDistance(cityA, cityB)) {
+						step = 5;
+						break;
+					}
+					// c
+					if (i == 0)
+						cityD = path.nextCity(cityC);
+					else if (i == 1)
+						cityD = path.prevCity(cityC);
+					// d
+					if (CitiesData.calcDistance(cityA, cityC) + CitiesData.calcDistance(cityB, cityD) < CitiesData.calcDistance(cityA, cityB) + CitiesData.calcDistance(cityC, cityD)) {
+						path.filpPath(cityA, cityB, cityC, cityD);
 
-					if(!isCandidate(cityB))
-					    add(cityB);
-					if(!isCandidate(cityC))
-					    add(cityC);
-					if(!isCandidate(cityD))
-					    add(cityD);
+						if (!isCandidate(cityB))
+							add(cityB);
+						if (!isCandidate(cityC))
+							add(cityC);
+						if (!isCandidate(cityD))
+							add(cityD);
 
-					HashSet<Integer> cand = CitiesData.getRevNeighbor(j, cityA);
-					cand.addAll(CitiesData.getRevNeighbor(j, cityB));
-					cand.addAll(CitiesData.getRevNeighbor(j, cityC));
-					cand.addAll(CitiesData.getRevNeighbor(j, cityD));
-					cand.forEach(e ->{
-					    if(!isCandidate(e))
-						add(e);
-					});
+						HashSet<Integer> candA = CitiesData.getWithinKNeighbor(cityA);
+						HashSet<Integer> candB = CitiesData.getWithinKNeighbor(cityB);
+						HashSet<Integer> candC = CitiesData.getWithinKNeighbor(cityC);
+						HashSet<Integer> candD = CitiesData.getWithinKNeighbor(cityD);
+						candA.retainAll(candB);
+						candA.retainAll(candC);
+						candA.retainAll(candD);
+						candA.forEach(e -> {
+							if (!isCandidate(e))
+								add(e);
+						});
 
-					flag = true;
-					break;
-				    }
+						flag = true;
+						break;
+					}
 				}
-				if(flag){
-				    step = 2;
-				    break;
+				if (flag) {
+					step = 2;
+					break;
 				}
 			case 5:
 				i++;
@@ -98,7 +101,7 @@ public class Opt_2 {
 					step = 3;
 					break;
 				}
-				else if (i == 2){
+				else if (i == 2) {
 					delete(cityA);
 				}
 			case 6:
@@ -111,21 +114,21 @@ public class Opt_2 {
 	}
 
 	private final int get(int index) {
-	    return fCandidates[index];
+		return fCandidates[index];
 	}
 
-	private final void delete(int city){
-	    fIsCandidate[city] = false;
-	    fNoOfCandidates--;
-	    fCandidates[pos] = fCandidates[fNoOfCandidates];
+	private final void delete(int city) {
+		fIsCandidate[city] = false;
+		fNoOfCandidates--;
+		fCandidates[pos] = fCandidates[fNoOfCandidates];
 	}
 
 	private final void add(int city) {
-	    fIsCandidate[city] = true;
-	    fCandidates[fNoOfCandidates++] = city;
+		fIsCandidate[city] = true;
+		fCandidates[fNoOfCandidates++] = city;
 	}
 
 	private final boolean isCandidate(int city) {
-	    return fIsCandidate[city];
+		return fIsCandidate[city];
 	}
 }
