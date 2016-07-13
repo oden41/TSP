@@ -79,11 +79,20 @@ public class Opt_2 {
 						HashSet<Integer> candB = CitiesData.getWithinKNeighbor(cityB);
 						HashSet<Integer> candC = CitiesData.getWithinKNeighbor(cityC);
 						HashSet<Integer> candD = CitiesData.getWithinKNeighbor(cityD);
-						candA.retainAll(candB);
-						candA.retainAll(candC);
-						candA.retainAll(candD);
 						candA.forEach(e -> {
-							if (!isCandidate(e))
+							if (candB.contains(e) && candC.contains(e) && candD.contains(e) && !isCandidate(e))
+								add(e);
+						});
+						candB.forEach(e -> {
+							if (candA.contains(e) && candC.contains(e) && candD.contains(e) && !isCandidate(e))
+								add(e);
+						});
+						candC.forEach(e -> {
+							if (candA.contains(e) && candB.contains(e) && candD.contains(e) && !isCandidate(e))
+								add(e);
+						});
+						candD.forEach(e -> {
+							if (candA.contains(e) && candB.contains(e) && candC.contains(e) && !isCandidate(e))
 								add(e);
 						});
 
