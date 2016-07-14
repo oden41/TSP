@@ -2,160 +2,162 @@ package path;
 
 import java.util.Random;
 
-import data.CitiesData;
-
 public class TravelingPath {
-	private int[] path;
-	private final int noOfCities;
-	private double tourLength;
-	private int[] cityToIndex;
+    private int[] path;
+    private final int noOfCities;
+    private double tourLength;
 
-	private Random random;
+    private Random random;
 
-	public TravelingPath(int noOfCities) {
-		path = new int[noOfCities];
-		this.noOfCities = noOfCities;
-		tourLength = 0;
-		cityToIndex = new int[noOfCities];
-		random = new Random();
+    // 2LevelTree用
+    private final int[] segmentIndexFromCityID;
+    private final int[] indexInSegmentFromCityID;
+    private final int[][] Segment;
+    private final boolean[] RevFlagFromSegIndex;
+
+    public TravelingPath(int noOfCities) {
+	this.noOfCities = noOfCities;
+	tourLength = 0;
+	random = new Random();
+	path = new int[noOfCities];
+
+	segmentIndexFromCityID = new int[noOfCities];
+	indexInSegmentFromCityID = new int[noOfCities];
+	Segment = new int[(int) Math.sqrt(noOfCities)][];
+	RevFlagFromSegIndex = new boolean[(int) Math.sqrt(noOfCities)];
+    }
+
+    public void init() {
+	for (int i = 0; i < path.length; i++) {
+	    path[i] = i;
 	}
+	shuffle();
 
-	public void init() {
-		for (int i = 0; i < path.length; i++) {
-			path[i] = i;
-			cityToIndex[i] = i;
+	int count = 0;
+	for (int i = 0; i < Segment.length; i++) {
+	    if (i == Segment.length - 1) {
+		Segment[i] = new int[path.length - count];
+		for (int j = 0; j < Segment[i].length; j++) {
+		    Segment[i][j] = path[count];
+		    segmentIndexFromCityID[path[count]] = i;
+		    indexInSegmentFromCityID[path[count]] = j;
+		    count++;
 		}
-		shuffle();
-		calcTourLength();
+		break;
+	    }
+
+	    RevFlagFromSegIndex[i] = false;
+	    Segment[i] = new int[(int) Math.sqrt(noOfCities)];
+	    for (int j = 0; j < Segment[i].length; j++) {
+		Segment[i][j] = path[count];
+		segmentIndexFromCityID[path[count]] = i;
+		indexInSegmentFromCityID[path[count]] = j;
+		count++;
+	    }
 	}
+    }
 
-	public int prevCity(int city) {
-		int prev = cityToIndex[city] - 1;
-		return prev < 0 ? path[path.length - 1] : path[prev];
+    public int prevCity(int city) {
+	int segIndex = segmentIndexFromCityID[city];
+	int indexInSegment = indexInSegmentFromCityID[city];
+
+	if (RevFlagFromSegIndex[segIndex]) {
+	    // 当該Segmentが反転
+	    if (indexInSegment == Segment[segIndex].length - 1) {
+		segIndex--;
+		if (segIndex == -1)
+		    segIndex = Segment.length - 1;
+		return RevFlagFromSegIndex[segIndex] ? Segment[segIndex][0]
+			: Segment[segIndex][Segment[segIndex].length - 1];
+	    } else {
+		indexInSegment++;
+		return Segment[segIndex][indexInSegment];
+	    }
+	} else {
+	    // 通常
+	    if (indexInSegment == 0) {
+		segIndex--;
+		if (segIndex == -1)
+		    segIndex = Segment.length - 1;
+		return RevFlagFromSegIndex[segIndex] ? Segment[segIndex][0]
+			: Segment[segIndex][Segment[segIndex].length - 1];
+	    } else {
+		indexInSegment--;
+		return Segment[segIndex][indexInSegment];
+	    }
 	}
+    }
 
-	public int nextCity(int city) {
-		int next = cityToIndex[city] + 1;
-		return next > path.length - 1 ? path[0] : path[next];
+    public int nextCity(int city) {
+	int segIndex = segmentIndexFromCityID[city];
+	int indexInSegment = indexInSegmentFromCityID[city];
+
+	if (RevFlagFromSegIndex[segIndex]) {
+	    // 当該Segmentが反転
+	    if (indexInSegment == 0) {
+		segIndex++;
+		if (segIndex == Segment.length)
+		    segIndex = 0;
+		return RevFlagFromSegIndex[segIndex] ? Segment[segIndex][Segment[segIndex].length - 1]
+			: Segment[segIndex][0];
+	    } else {
+		indexInSegment--;
+		return Segment[segIndex][indexInSegment];
+	    }
+	} else {
+	    // 通常
+	    if (indexInSegment == Segment[segIndex].length - 1) {
+		segIndex++;
+		if (segIndex == Segment.length)
+		    segIndex = 0;
+		return RevFlagFromSegIndex[segIndex] ? Segment[segIndex][Segment[segIndex].length - 1]
+			: Segment[segIndex][0];
+	    } else {
+		indexInSegment++;
+		return Segment[segIndex][indexInSegment];
+	    }
 	}
+    }
 
-	public void filpPath(int a, int b, int c, int d) {
-		// 端点処理
-		if (cityToIndex[a] == 0 && cityToIndex[b] == path.length - 1 || cityToIndex[c] == 0 && cityToIndex[d] == path.length - 1) {
-			int temp = a;
-			a = b;
-			b = temp;
-			temp = c;
-			c = d;
-			d = temp;
+    public void filpPath(int a, int b, int c, int d) {
+    }
 
-			int i = 100000;
-			int j = 100000;
-			if (cityToIndex[b] == 0) {
-				if (cityToIndex[c] - cityToIndex[b] <= path.length / 2) {
-					i = cityToIndex[b];
-					j = cityToIndex[c];
-				}
-				else {
-					i = cityToIndex[d];
-					j = cityToIndex[a];
-				}
-			}
-			else if (cityToIndex[d] == 0) {
-				if (cityToIndex[a] - cityToIndex[d] <= path.length / 2) {
-					i = cityToIndex[d];
-					j = cityToIndex[a];
-				}
-				else {
-					i = cityToIndex[b];
-					j = cityToIndex[c];
-				}
-			}
+    private void calcTourLength() {
+	double distance = 0;
+    }
 
-			while (i < j) {
-				swap(i, j);
-				i++;
-				j--;
-			}
-			return;
-		}
+    public final double getTourLength() {
+	calcTourLength();
+	return tourLength;
+    }
 
-		// index:a < b < c < dにするための処理
-		if (cityToIndex[a] > cityToIndex[b]) {
-			int temp = a;
-			a = b;
-			b = temp;
-			temp = c;
-			c = d;
-			d = temp;
-		}
-		if (cityToIndex[a] > cityToIndex[c]) {
-			int temp = a;
-			a = c;
-			c = temp;
-			temp = b;
-			b = d;
-			d = temp;
-		}
+    public final void addTourLength(int value) {
+	tourLength += value;
+    }
 
-		if (cityToIndex[c] - cityToIndex[a] <= path.length / 2) {
-			// 内
-			int i = cityToIndex[b];
-			int j = cityToIndex[c];
-			while (i < j) {
-				swap(i, j);
-				i++;
-				j--;
-			}
-		}
-		else {
-			// 外
-			int i = cityToIndex[a];
-			int j = cityToIndex[d];
-			while (j - i != 1 && j != i) {
-				swap(i, j);
-				i--;
-				j++;
-				if (i < 0)
-					i = path.length - 1;
-				if (j > path.length - 1)
-					j = 0;
-			}
-		}
+    public final void shuffle() {
+	for (int i = 0; i < noOfCities; i++) {
+	    int index = random.nextInt(noOfCities - i) + i;
+	    swap(i, index);
 	}
+    }
 
-	private void calcTourLength() {
-		double distance = 0;
-		for (int i = 0; i < path.length - 1; i++) {
-			distance += CitiesData.calcDistance(path[i], path[i + 1]);
-		}
-		tourLength = distance + CitiesData.calcDistance(path[0], path[path.length - 1]);
+    public void swap(int index1, int index2) {
+	int temp = path[index1];
+	int temp2 = path[index2];
+	path[index1] = temp2;
+	path[index2] = temp;
+    }
+
+    public static void main(String[] args) {
+	TravelingPath path = new TravelingPath(10);
+	path.init();
+	path.RevFlagFromSegIndex[0] = true;
+	path.RevFlagFromSegIndex[1] = true;
+	for (int i = 0; i < 10; i++) {
+	    System.out.println(path.nextCity(i));
+	    System.out.println(path.prevCity(i));
 	}
-
-	public final double getTourLength() {
-		calcTourLength();
-		return tourLength;
-	}
-
-	public final void addTourLength(int value) {
-		tourLength += value;
-	}
-
-	public final void shuffle() {
-		for (int i = 0; i < noOfCities; i++) {
-			int index = random.nextInt(noOfCities - i) + i;
-			swap(i, index);
-		}
-	}
-
-	public void swap(int index1, int index2) {
-		int temp = path[index1];
-		int temp2 = path[index2];
-		path[index1] = temp2;
-		path[index2] = temp;
-
-		int tIndex = cityToIndex[temp];
-		cityToIndex[temp] = cityToIndex[temp2];
-		cityToIndex[temp2] = tIndex;
-	}
+	System.out.println();
+    }
 }
