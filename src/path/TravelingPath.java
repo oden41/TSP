@@ -2,6 +2,8 @@ package path;
 
 import java.util.Random;
 
+import data.CitiesData;
+
 public class TravelingPath {
     private int[] path;
     private final int noOfCities;
@@ -123,7 +125,26 @@ public class TravelingPath {
     }
 
     private void calcTourLength() {
+	int[] tour = new int[noOfCities];
+	int count = 0;
+	for (int i = 0; i < Segment.length; i++) {
+	    if (RevFlagFromSegIndex[i]) {
+		for (int j = Segment[i].length - 1; j >= 0; j--) {
+		    tour[count] = Segment[i][j];
+		    count++;
+		}
+	    } else {
+		for (int j = 0; j < Segment[i].length; j++) {
+		    tour[count] = Segment[i][j];
+		    count++;
+		}
+	    }
+	}
 	double distance = 0;
+	for (int i = 0; i < tour.length - 1; i++) {
+	    distance += CitiesData.calcDistance(tour[i], tour[i + 1]);
+	}
+	tourLength = distance + CitiesData.calcDistance(tour[0], tour[tour.length - 1]);
     }
 
     public final double getTourLength() {
@@ -153,11 +174,8 @@ public class TravelingPath {
 	TravelingPath path = new TravelingPath(10);
 	path.init();
 	path.RevFlagFromSegIndex[0] = true;
-	path.RevFlagFromSegIndex[1] = true;
-	for (int i = 0; i < 10; i++) {
-	    System.out.println(path.nextCity(i));
-	    System.out.println(path.prevCity(i));
-	}
+	path.RevFlagFromSegIndex[2] = true;
+	path.calcTourLength();
 	System.out.println();
     }
 }
