@@ -121,7 +121,44 @@ public class TravelingPath {
 	}
     }
 
-    public void filpPath(int a, int b, int c, int d) {
+    public void filpPath(int a, int b, int c, int d, int i) {
+	// 交換範囲を決定
+	int start, end;
+	if (segmentIndexFromCityID[a] == segmentIndexFromCityID[c] && segmentIndexFromCityID[a] == 2)
+	    System.out.println();
+	if (i == 0) {
+	    // a,b
+	    if (segmentIndexFromCityID[a] < segmentIndexFromCityID[c]
+		    || segmentIndexFromCityID[a] == segmentIndexFromCityID[c]
+			    && (indexInSegmentFromCityID[a] < indexInSegmentFromCityID[c]
+				    && RevFlagFromSegIndex[segmentIndexFromCityID[a]] == false
+				    || indexInSegmentFromCityID[a] > indexInSegmentFromCityID[c]
+					    && RevFlagFromSegIndex[segmentIndexFromCityID[a]] == true)) {
+		// a,b,c,d
+		start = b;
+		end = c;
+	    } else {
+		// c,d,a,b
+		start = d;
+		end = a;
+	    }
+	} else {
+	    // b,a
+	    if (segmentIndexFromCityID[a] < segmentIndexFromCityID[c]
+		    || segmentIndexFromCityID[a] == segmentIndexFromCityID[c]
+			    && (indexInSegmentFromCityID[a] < indexInSegmentFromCityID[c]
+				    && RevFlagFromSegIndex[segmentIndexFromCityID[a]] == false
+				    || indexInSegmentFromCityID[a] > indexInSegmentFromCityID[c]
+					    && RevFlagFromSegIndex[segmentIndexFromCityID[a]] == true)) {
+		// b,a,d,c
+		start = a;
+		end = d;
+	    } else {
+		// d,c,b,a
+		start = c;
+		end = b;
+	    }
+	}
     }
 
     private void calcTourLength() {
@@ -171,11 +208,12 @@ public class TravelingPath {
     }
 
     public static void main(String[] args) {
-	TravelingPath path = new TravelingPath(10);
-	path.init();
-	path.RevFlagFromSegIndex[0] = true;
-	path.RevFlagFromSegIndex[2] = true;
-	path.calcTourLength();
-	System.out.println();
+	while (true) {
+	    TravelingPath path = new TravelingPath(100);
+	    path.init();
+	    path.RevFlagFromSegIndex[0] = true;
+	    path.RevFlagFromSegIndex[2] = true;
+	    path.filpPath(0, path.prevCity(0), 1, path.prevCity(1), 1);
+	}
     }
 }
