@@ -14,9 +14,9 @@ public class TravelingPath {
     // 2LevelTree用
     private final int[] segmentIDFromCityID;
     private final int[] indexInSegmentFromCityID;
-    private final int[][] se;
-    private final int[] segmentTourFromSegID;
+    private final int[][] TSegment;
     private final int[] segIDFromSegIndex;
+    private final int[] segIndexFromSegID;
     private final boolean[] RevFlagFromSegID;
 
     public TravelingPath(int noOfCities) {
@@ -27,10 +27,10 @@ public class TravelingPath {
 
 	segmentIDFromCityID = new int[noOfCities];
 	indexInSegmentFromCityID = new int[noOfCities];
-	segmentTourFromSegID = new int[(int) Math.sqrt(noOfCities)];
 	segIDFromSegIndex = new int[(int) Math.sqrt(noOfCities)];
+	segIndexFromSegID = new int[(int) Math.sqrt(noOfCities)];
 	// [ID][element]
-	se = new int[(int) Math.sqrt(noOfCities)][];
+	TSegment = new int[(int) Math.sqrt(noOfCities)][];
 	RevFlagFromSegID = new boolean[(int) Math.sqrt(noOfCities)];
     }
 
@@ -41,14 +41,14 @@ public class TravelingPath {
 	shuffle();
 
 	int count = 0;
-	for (int i = 0; i < se.length; i++) {
-	    segmentTourFromSegID[i] = i;
+	for (int i = 0; i < TSegment.length; i++) {
 	    segIDFromSegIndex[i] = i;
+	    segIndexFromSegID[i] = i;
 
-	    if (i == se.length - 1) {
-		se[i] = new int[path.length - count];
-		for (int j = 0; j < se[i].length; j++) {
-		    se[i][j] = path[count];
+	    if (i == TSegment.length - 1) {
+		TSegment[i] = new int[path.length - count];
+		for (int j = 0; j < TSegment[i].length; j++) {
+		    TSegment[i][j] = path[count];
 		    segmentIDFromCityID[path[count]] = i;
 		    indexInSegmentFromCityID[path[count]] = j;
 		    count++;
@@ -57,9 +57,9 @@ public class TravelingPath {
 	    }
 
 	    RevFlagFromSegID[i] = false;
-	    se[i] = new int[(int) Math.sqrt(noOfCities)];
-	    for (int j = 0; j < se[i].length; j++) {
-		se[i][j] = path[count];
+	    TSegment[i] = new int[(int) Math.sqrt(noOfCities)];
+	    for (int j = 0; j < TSegment[i].length; j++) {
+		TSegment[i][j] = path[count];
 		segmentIDFromCityID[path[count]] = i;
 		indexInSegmentFromCityID[path[count]] = j;
 		count++;
@@ -69,63 +69,63 @@ public class TravelingPath {
 
     public int prevCity(int city) {
 	int segID = segmentIDFromCityID[city];
-	int segIndex = segmentTourFromSegID[segID];
+	int segIndex = segIndexFromSegID[segID];
 	int indexInSegment = indexInSegmentFromCityID[city];
 
 	if (RevFlagFromSegID[segID]) {
 	    // 当該Segmentが反転
-	    if (indexInSegment == se[segID].length - 1) {
+	    if (indexInSegment == TSegment[segID].length - 1) {
 		segIndex--;
 		if (segIndex == -1)
-		    segIndex = se.length - 1;
+		    segIndex = TSegment.length - 1;
 		int id = segIDFromSegIndex[segIndex];
-		return RevFlagFromSegID[id] ? se[id][0] : se[id][se[id].length - 1];
+		return RevFlagFromSegID[id] ? TSegment[id][0] : TSegment[id][TSegment[id].length - 1];
 	    } else {
 		indexInSegment++;
-		return se[segID][indexInSegment];
+		return TSegment[segID][indexInSegment];
 	    }
 	} else {
 	    // 通常
 	    if (indexInSegment == 0) {
 		segIndex--;
 		if (segIndex == -1)
-		    segIndex = se.length - 1;
-		return RevFlagFromSegID[segID] ? se[segID][0] : se[segID][se[segID].length - 1];
+		    segIndex = TSegment.length - 1;
+		return RevFlagFromSegID[segID] ? TSegment[segID][0] : TSegment[segID][TSegment[segID].length - 1];
 	    } else {
 		indexInSegment--;
-		return se[segID][indexInSegment];
+		return TSegment[segID][indexInSegment];
 	    }
 	}
     }
 
     public int nextCity(int city) {
 	int segID = segmentIDFromCityID[city];
-	int segIndex = segmentTourFromSegID[segID];
+	int segIndex = segIndexFromSegID[segID];
 	int indexInSegment = indexInSegmentFromCityID[city];
 
 	if (RevFlagFromSegID[segID]) {
 	    // 当該Segmentが反転
 	    if (indexInSegment == 0) {
 		segIndex++;
-		if (segIndex == se.length)
+		if (segIndex == TSegment.length)
 		    segIndex = 0;
 		int id = segIDFromSegIndex[segIndex];
-		return RevFlagFromSegID[id] ? se[id][se[id].length - 1] : se[id][0];
+		return RevFlagFromSegID[id] ? TSegment[id][TSegment[id].length - 1] : TSegment[id][0];
 	    } else {
 		indexInSegment--;
-		return se[segID][indexInSegment];
+		return TSegment[segID][indexInSegment];
 	    }
 	} else {
 	    // 通常
-	    if (indexInSegment == se[segID].length - 1) {
+	    if (indexInSegment == TSegment[segID].length - 1) {
 		segIndex++;
-		if (segIndex == se.length)
+		if (segIndex == TSegment.length)
 		    segIndex = 0;
 		int id = segIDFromSegIndex[segIndex];
-		return RevFlagFromSegID[id] ? se[id][se[id].length - 1] : se[id][0];
+		return RevFlagFromSegID[id] ? TSegment[id][TSegment[id].length - 1] : TSegment[id][0];
 	    } else {
 		indexInSegment++;
-		return se[segID][indexInSegment];
+		return TSegment[segID][indexInSegment];
 	    }
 	}
     }
@@ -135,7 +135,7 @@ public class TravelingPath {
 	int start, end;
 	if (i == 0) {
 	    // a,b
-	    if (segmentTourFromSegID[segmentIDFromCityID[a]] < segmentTourFromSegID[segmentIDFromCityID[c]]
+	    if (segIndexFromSegID[segmentIDFromCityID[a]] < segIndexFromSegID[segmentIDFromCityID[c]]
 		    || segmentIDFromCityID[a] == segmentIDFromCityID[c]
 			    && (indexInSegmentFromCityID[a] < indexInSegmentFromCityID[c]
 				    && RevFlagFromSegID[segmentIDFromCityID[a]] == false
@@ -151,7 +151,7 @@ public class TravelingPath {
 	    }
 	} else {
 	    // b,a
-	    if (segmentTourFromSegID[segmentIDFromCityID[a]] < segmentTourFromSegID[segmentIDFromCityID[c]]
+	    if (segIndexFromSegID[segmentIDFromCityID[a]] < segIndexFromSegID[segmentIDFromCityID[c]]
 		    || segmentIDFromCityID[a] == segmentIDFromCityID[c]
 			    && (indexInSegmentFromCityID[a] < indexInSegmentFromCityID[c]
 				    && RevFlagFromSegID[segmentIDFromCityID[a]] == false
@@ -171,14 +171,14 @@ public class TravelingPath {
 
 	} else {
 	    if ((indexInSegmentFromCityID[start] == 0 && !RevFlagFromSegID[segmentIDFromCityID[start]]
-		    || indexInSegmentFromCityID[start] == se[segmentIDFromCityID[start]].length - 1
+		    || indexInSegmentFromCityID[start] == TSegment[segmentIDFromCityID[start]].length - 1
 			    && RevFlagFromSegID[segmentIDFromCityID[start]])
-		    && (indexInSegmentFromCityID[end] == se[segmentIDFromCityID[end]].length - 1
+		    && (indexInSegmentFromCityID[end] == TSegment[segmentIDFromCityID[end]].length - 1
 			    && !RevFlagFromSegID[segmentIDFromCityID[end]]
 			    || indexInSegmentFromCityID[end] == 0 && RevFlagFromSegID[segmentIDFromCityID[end]])) {
 		// 分割する必要ないパターン
-		int startIndex = segmentTourFromSegID[segmentIDFromCityID[start]];
-		int endIndex = segmentTourFromSegID[segmentIDFromCityID[end]];
+		int startIndex = segIndexFromSegID[segmentIDFromCityID[start]];
+		int endIndex = segIndexFromSegID[segmentIDFromCityID[end]];
 		while (startIndex < endIndex) {
 		    swapSegment(startIndex, endIndex);
 		    RevFlagFromSegID[segIDFromSegIndex[startIndex]] = !RevFlagFromSegID[segIDFromSegIndex[startIndex]];
@@ -190,6 +190,7 @@ public class TravelingPath {
 		if (startIndex == endIndex)
 		    RevFlagFromSegID[segIDFromSegIndex[startIndex]] = !RevFlagFromSegID[segIDFromSegIndex[startIndex]];
 
+		System.out.println();
 	    } else {
 		// 分割必要あり
 	    }
@@ -199,15 +200,15 @@ public class TravelingPath {
     private void calcTourLength() {
 	int[] tour = new int[noOfCities];
 	int count = 0;
-	for (int i = 0; i < se.length; i++) {
+	for (int i = 0; i < TSegment.length; i++) {
 	    if (RevFlagFromSegID[i]) {
-		for (int j = se[i].length - 1; j >= 0; j--) {
-		    tour[count] = se[i][j];
+		for (int j = TSegment[i].length - 1; j >= 0; j--) {
+		    tour[count] = TSegment[i][j];
 		    count++;
 		}
 	    } else {
-		for (int j = 0; j < se[i].length; j++) {
-		    tour[count] = se[i][j];
+		for (int j = 0; j < TSegment[i].length; j++) {
+		    tour[count] = TSegment[i][j];
 		    count++;
 		}
 	    }
@@ -243,15 +244,25 @@ public class TravelingPath {
     }
 
     private final void swapSegment(int index1, int index2) {
+	int temp = segIDFromSegIndex[index1];
+	int temp2 = segIDFromSegIndex[index2];
+	segIDFromSegIndex[index1] = segIDFromSegIndex[index2];
+	segIDFromSegIndex[index2] = temp;
+
+	int tIndex = segIndexFromSegID[temp];
+	segIndexFromSegID[temp] = segIndexFromSegID[temp2];
+	segIndexFromSegID[temp2] = tIndex;
     }
 
     public static void main(String[] args) {
 	while (true) {
-	    TravelingPath path = new TravelingPath(100);
+	    TravelingPath path = new TravelingPath(20);
 	    path.init();
 	    path.RevFlagFromSegID[0] = true;
 	    path.RevFlagFromSegID[2] = true;
-	    path.filpPath(0, path.prevCity(0), 1, path.prevCity(1), 1);
+	    Random random = new Random();
+	    path.filpPath(0, path.nextCity(0), 1, path.nextCity(1), 0);
+	    System.out.println();
 	}
     }
 }
