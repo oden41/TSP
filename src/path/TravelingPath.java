@@ -136,17 +136,53 @@ public class TravelingPath {
     }
 
     public void filpPath(int a, int b, int c, int d, int i) {
+	// 交換範囲を決定
+	int start, end;
+	if (i == 0) {
+	    // a,b
+	    if (segIndexFromSegID[segmentIDFromCityID[a]] < segIndexFromSegID[segmentIDFromCityID[c]]
+		    || segmentIDFromCityID[a] == segmentIDFromCityID[c]
+			    && (indexInSegmentFromCityID[a] < indexInSegmentFromCityID[c]
+				    && RevFlagFromSegID[segmentIDFromCityID[a]] == false
+				    || indexInSegmentFromCityID[a] > indexInSegmentFromCityID[c]
+					    && RevFlagFromSegID[segmentIDFromCityID[a]] == true)) {
+		// a,b,c,d
+		start = b;
+		end = c;
+	    } else {
+		// c,d,a,b
+		start = d;
+		end = a;
+	    }
+	} else {
+	    // b,a
+	    if (segIndexFromSegID[segmentIDFromCityID[a]] < segIndexFromSegID[segmentIDFromCityID[c]]
+		    || segmentIDFromCityID[a] == segmentIDFromCityID[c]
+			    && (indexInSegmentFromCityID[a] < indexInSegmentFromCityID[c]
+				    && RevFlagFromSegID[segmentIDFromCityID[a]] == false
+				    || indexInSegmentFromCityID[a] > indexInSegmentFromCityID[c]
+					    && RevFlagFromSegID[segmentIDFromCityID[a]] == true)) {
+		// b,a,d,c
+		start = a;
+		end = d;
+	    } else {
+		// d,c,b,a
+		start = c;
+		end = b;
+	    }
+	}
+
 	if (segmentIDFromCityID[b] == segmentIDFromCityID[c]) {
 	    return;
-	} else if ((indexInSegmentFromCityID[b] == 0 && !RevFlagFromSegID[segmentIDFromCityID[b]]
-		|| indexInSegmentFromCityID[b] == TSegment[segmentIDFromCityID[b]].length - 1
-			&& RevFlagFromSegID[segmentIDFromCityID[b]])
-		&& (indexInSegmentFromCityID[c] == TSegment[segmentIDFromCityID[c]].length - 1
-			&& !RevFlagFromSegID[segmentIDFromCityID[c]]
-			|| indexInSegmentFromCityID[c] == 0 && RevFlagFromSegID[segmentIDFromCityID[c]])) {
+	} else if ((indexInSegmentFromCityID[start] == 0 && !RevFlagFromSegID[segmentIDFromCityID[start]]
+		|| indexInSegmentFromCityID[start] == TSegment[segmentIDFromCityID[start]].length - 1
+			&& RevFlagFromSegID[segmentIDFromCityID[start]])
+		&& (indexInSegmentFromCityID[end] == TSegment[segmentIDFromCityID[end]].length - 1
+			&& !RevFlagFromSegID[segmentIDFromCityID[end]]
+			|| indexInSegmentFromCityID[end] == 0 && RevFlagFromSegID[segmentIDFromCityID[end]])) {
 
-	    int startIndex = segIndexFromSegID[segmentIDFromCityID[b]];
-	    int endIndex = segIndexFromSegID[segmentIDFromCityID[c]];
+	    int startIndex = segIndexFromSegID[segmentIDFromCityID[start]];
+	    int endIndex = segIndexFromSegID[segmentIDFromCityID[end]];
 	    int swapCount = 0;
 	    if (startIndex == endIndex) {
 		RevFlagFromSegID[segIDFromSegIndex[startIndex]] = !RevFlagFromSegID[segIDFromSegIndex[startIndex]];
@@ -172,16 +208,16 @@ public class TravelingPath {
 	    if (startIndex == endIndex)
 		RevFlagFromSegID[segIDFromSegIndex[startIndex]] = !RevFlagFromSegID[segIDFromSegIndex[startIndex]];
 	} else {
-	    int startSplitSegIndex = segIndexFromSegID[segmentIDFromCityID[b]],
-		    endSplitSegIndex = segIndexFromSegID[segmentIDFromCityID[c]];
+	    int startSplitSegIndex = segIndexFromSegID[segmentIDFromCityID[start]],
+		    endSplitSegIndex = segIndexFromSegID[segmentIDFromCityID[end]];
 	    int[] startSplit, endSplit;
 	    // 分割
-	    if (!(indexInSegmentFromCityID[b] == 0 && !RevFlagFromSegID[segmentIDFromCityID[b]]
-		    || indexInSegmentFromCityID[b] == TSegment[segmentIDFromCityID[b]].length - 1
-			    && RevFlagFromSegID[segmentIDFromCityID[b]])) {
-		int plot = indexInSegmentFromCityID[b];
-		int id = segmentIDFromCityID[b];
-		if (RevFlagFromSegID[segmentIDFromCityID[b]]) {
+	    if (!(indexInSegmentFromCityID[start] == 0 && !RevFlagFromSegID[segmentIDFromCityID[start]]
+		    || indexInSegmentFromCityID[start] == TSegment[segmentIDFromCityID[start]].length - 1
+			    && RevFlagFromSegID[segmentIDFromCityID[start]])) {
+		int plot = indexInSegmentFromCityID[start];
+		int id = segmentIDFromCityID[start];
+		if (RevFlagFromSegID[segmentIDFromCityID[start]]) {
 		    startSplit = new int[TSegment[id].length - plot - 1];
 		    for (int j = TSegment[id].length - 1; j > plot; j--) {
 			startSplit[TSegment[id].length - j - 1] = TSegment[id][j];
@@ -206,12 +242,12 @@ public class TravelingPath {
 		}
 		int nop = 0;
 	    }
-	    if (!(indexInSegmentFromCityID[c] == TSegment[segmentIDFromCityID[c]].length - 1
-		    && !RevFlagFromSegID[segmentIDFromCityID[c]]
-		    || indexInSegmentFromCityID[c] == 0 && RevFlagFromSegID[segmentIDFromCityID[c]])) {
-		int plot = indexInSegmentFromCityID[c];
-		int id = segmentIDFromCityID[c];
-		if (RevFlagFromSegID[segmentIDFromCityID[c]]) {
+	    if (!(indexInSegmentFromCityID[end] == TSegment[segmentIDFromCityID[end]].length - 1
+		    && !RevFlagFromSegID[segmentIDFromCityID[end]]
+		    || indexInSegmentFromCityID[end] == 0 && RevFlagFromSegID[segmentIDFromCityID[end]])) {
+		int plot = indexInSegmentFromCityID[end];
+		int id = segmentIDFromCityID[end];
+		if (RevFlagFromSegID[segmentIDFromCityID[end]]) {
 		    endSplit = new int[plot];
 		    for (int j = endSplit.length - 1; j >= 0; j--) {
 			endSplit[endSplit.length - j - 1] = TSegment[id][j];
