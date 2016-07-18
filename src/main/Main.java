@@ -13,12 +13,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
-	int noOfCities = 4663;
+	int noOfCities = 9847;
 	ArrayList<Long> timeList = new ArrayList<>();
 	ArrayList<Double> pathLengthList = new ArrayList<>();
 
 	for (int i = 0; i < 11; i++) {
-	    CitiesData data = new CitiesData("ca4663", noOfCities);
+	    CitiesData data = new CitiesData("ja9847", noOfCities);
 	    TravelingPath path = new TravelingPath(noOfCities);
 	    path.init();
 	    Opt_2 opt2 = new Opt_2(noOfCities, path);
