@@ -328,6 +328,14 @@ public class TravelingPath {
 	    // 結合
 	    startSplitSegIndex = temp1;
 	    endSplitSegIndex = temp2;
+	    if (startSplit != null & endSplit != null & startSplitSegIndex == 0
+		    && endSplitSegIndex == segIDFromSegIndex.length - 1) {
+		// 入れ替えないように例外処理
+		combinePrev(startSplitSegIndex, startSplit);
+		combineNext(endSplitSegIndex, endSplit);
+		return;
+	    }
+
 	    if (startSplit != null) {
 		int comp = startSplitSegIndex == 0 ? segIDFromSegIndex.length - 1 : startSplitSegIndex - 1;
 		if (TSegment[segIDFromSegIndex[comp]].length < TSegment[segIDFromSegIndex[startSplitSegIndex]].length) {
